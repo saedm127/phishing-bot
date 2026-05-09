@@ -1,16 +1,14 @@
 import os
 import re
-import asyncio
-import google.generativeai as genai
+from groq import Groq
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQueryHandler, ContextTypes, filters
 
 # ── Sozlamalar ──────────────────────────────────────────────
 TELEGRAM_TOKEN = "8657385531:AAFlsunspUuZEjXc-o4UxYcPqirHlPV0fm4"
-GEMINI_API_KEY = "AULzfBuUAPfCGAXoG5Vq14aP9s6fx3AH4Z"
+GROQ_API_KEY = "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"
 
-genai.configure(api_key=GEMINI_API_KEY)
-gemini = genai.GenerativeModel("gemini-2.0-flash")
+client = Groq(api_key=GROQ_API_KEY)
 
 PROMPT = """Siz kiberxavfsizlik mutaxassisi va phishing analizatoridasiz.
 Foydalanuvchi email matni yoki URL beradi. Uni tahlil qilib, FAQAT quyidagi formatda javob bering:
@@ -55,17 +53,14 @@ async def help_cmd(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "/about — Bot haqida\n\n"
         "Har qanday email matni yoki URL yuboring!"
     )
-    if hasattr(update, 'message') and update.message:
-        await update.message.reply_text(text, parse_mode="Markdown")
-    else:
-        await update.effective_message.reply_text(text, parse_mode="Markdown")
+    await update.effective_message.reply_text(text, parse_mode="Markdown")
 
 
 async def about(update: Update, context: ContextTypes.DEFAULT_TYPE):
     text = (
         "ℹ️ *Bot haqida*\n\n"
         "Loyiha: Phishing hujumini simulyatsiya va ML aniqlash\n"
-        "AI: Google Gemini 1.5 Flash\n"
+        "AI: Groq (Llama 3)\n"
         "Til: Python + python-telegram-bot\n"
         "Aniqlik: ~95%+"
     )
@@ -79,9 +74,8 @@ async def demo(update: Update, context: ContextTypes.DEFAULT_TYPE):
         "http://hamkorbank-verify.tk/login\n"
         "24 soat ichida BLOKLANADI!"
     )
-    msg = update.effective_message
-    await msg.reply_text("🧪 *Demo tahlil boshlanmoqda...*", parse_mode="Markdown")
-    await run_analysis(msg, demo_email)
+    await update.effective_message.reply_text("🧪 *Demo tahlil boshlanmoqda...*", parse_mode="Markdown")
+    await run_analysis(update.effective_message, demo_email)
 
 
 async def callback_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -100,8 +94,15 @@ async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
 async def run_analysis(msg, user_text):
     wait = await msg.reply_text("🔍 Tahlil qilinmoqda...")
     try:
-        response = gemini.generate_content(PROMPT + f"\n\nTahlil qil:\n{user_text}")
-        result = response.text
+        response = client.chat.completions.create(
+            model="llama3-8b-8192",
+            messages=[
+                {"role": "system", "content": PROMPT},
+                {"role": "user", "content": f"Tahlil qil:\n{user_text}"}
+            ],
+            max_tokens=800
+        )
+        result = response.choices[0].message.content
         formatted = format_result(result, user_text)
         await wait.delete()
         await msg.reply_text(formatted, parse_mode="Markdown")
