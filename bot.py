@@ -1,4 +1,4 @@
-import os
+model="llama-3.3-70b-versatile",
 import re
 from groq import Groq
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
