@@ -10,7 +10,7 @@ TELEGRAM_TOKEN = "8657385531:AAFlsunspUuZEjXc-o4UxYcPqirHlPV0fm4"
 GEMINI_API_KEY = "AIzaSyBpPTjNjav7WV9-c9wcZFKMNkOyVVo-oA4"
 
 genai.configure(api_key=GEMINI_API_KEY)
-gemini = genai.GenerativeModel("gemini-pro")
+gemini = genai.GenerativeModel("gemini-2.0-flash")
 
 PROMPT = """Siz kiberxavfsizlik mutaxassisi va phishing analizatoridasiz.
 Foydalanuvchi email matni yoki URL beradi. Uni tahlil qilib, FAQAT quyidagi formatda javob bering:
