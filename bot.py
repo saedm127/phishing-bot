@@ -7,7 +7,7 @@ from telegram.ext import Application, CommandHandler, MessageHandler, CallbackQu
 
 # ── Sozlamalar ──────────────────────────────────────────────
 TELEGRAM_TOKEN = "8657385531:AAFlsunspUuZEjXc-o4UxYcPqirHlPV0fm4"
-GEMINI_API_KEY = "AIzaSyBEhQ7Dfo3msyBFrk_d75FlXTnkikL21lI"
+GEMINI_API_KEY = "AIzaSyBNx-tQf_QU9G-qzbVG5k9Yv9SWXIzSdXs"
 
 genai.configure(api_key=GEMINI_API_KEY)
 gemini = genai.GenerativeModel("gemini-2.0-flash")
